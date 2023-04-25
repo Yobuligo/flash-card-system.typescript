@@ -1,5 +1,4 @@
 import { IFlashCard } from "../model/IFlashCard";
-import { IFlashCardSection } from "../model/IFlashCardSection";
 
 /**
  * An implementation of this interface represents a flash card shift rule.
@@ -7,13 +6,6 @@ import { IFlashCardSection } from "../model/IFlashCardSection";
  * or needs to be shifted down, if a {@link IFlashCard} exercise was failed.
  */
 export interface IFlashCardShiftRule {
-  needsShiftUp(
-    flashCardSection: IFlashCardSection,
-    flashCard: IFlashCard
-  ): boolean;
-
-  needsShiftDown(
-    flashCardSection: IFlashCardSection,
-    flashCard: IFlashCard
-  ): boolean;
+  needsShiftUp(flashCard: IFlashCard): boolean;
+  needsShiftDown(flashCard: IFlashCard): boolean;
 }

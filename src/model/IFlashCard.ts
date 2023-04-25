@@ -1,3 +1,4 @@
+import { IFlashCardSection } from "./IFlashCardSection";
 import { IResolvable } from "./IResolvable";
 import { EventHandler } from "./Types";
 
@@ -7,6 +8,7 @@ import { EventHandler } from "./Types";
  */
 export interface IFlashCard extends IResolvable<EventHandler> {
   readonly answer: string;
+  flashCardSection: IFlashCardSection;
   readonly id: string;
   readonly numberSuccessfulAnswers: number;
   readonly question: string;
