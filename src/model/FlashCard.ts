@@ -1,19 +1,22 @@
+import { EventHandler, EventHandlers } from "../core/Types";
 import { IFlashCard } from "./IFlashCard";
 
 export class FlashCard implements IFlashCard {
   private _numberSuccessfulAnswers: number;
-  private onPracticedHandlers: (() => void)[] = [];
+  private onFailHandlers: EventHandlers = [];
+  private onPracticeHandlers: EventHandlers = [];
+  private onSuccessHandlers: EventHandlers = [];
 
   public constructor(
     public readonly id: string,
-    numberSuccessFulAnswers: number,
+    numberSuccessfulAnswers: number,
     public readonly question: string,
     public readonly answer: string
   ) {
-    this._numberSuccessfulAnswers = numberSuccessFulAnswers;
+    this._numberSuccessfulAnswers = numberSuccessfulAnswers;
   }
 
-  get numberSuccessFulAnswers(): number {
+  get numberSuccessfulAnswers(): number {
     return this._numberSuccessfulAnswers;
   }
 
@@ -21,21 +24,37 @@ export class FlashCard implements IFlashCard {
     if (this._numberSuccessfulAnswers > 0) {
       this._numberSuccessfulAnswers--;
     }
-    this.publishOnPracticed();
+    this.publishOnFailed();
+    this.publishOnPractice();
   }
 
-  onPracticed(onPracticedHandler: () => void): void {
-    this.onPracticedHandlers.push(onPracticedHandler);
+  onFail(handler: EventHandler): void {
+    this.onFailHandlers.push(handler);
+  }
+
+  onPractice(handler: EventHandler): void {
+    this.onPracticeHandlers.push(handler);
+  }
+
+  onSuccess(handler: EventHandler): void {
+    this.onSuccessHandlers.push(handler);
   }
 
   succeed(): void {
     this._numberSuccessfulAnswers++;
-    this.publishOnPracticed();
+    this.publishOnSucceed();
+    this.publishOnPractice();
   }
 
-  private publishOnPracticed() {
-    this.onPracticedHandlers.forEach((onPracticeHandler) =>
-      onPracticeHandler()
-    );
+  private publishOnFailed() {
+    this.onFailHandlers.forEach((handler) => handler());
+  }
+
+  private publishOnPractice() {
+    this.onPracticeHandlers.forEach((handler) => handler());
+  }
+
+  private publishOnSucceed() {
+    this.onSuccessHandlers.forEach((handler) => handler());
   }
 }
