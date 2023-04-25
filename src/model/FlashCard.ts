@@ -1,11 +1,11 @@
-import { EventHandler, EventHandlers } from "../core/Types";
+import { EventHandlerRepository } from "../services/EventHandlerRepository";
 import { IFlashCard } from "./IFlashCard";
+import { EventHandler } from "./Types";
 
 export class FlashCard implements IFlashCard {
   private _numberSuccessfulAnswers: number;
-  private onFailHandlers: EventHandlers = [];
-  private onPracticeHandlers: EventHandlers = [];
-  private onSuccessHandlers: EventHandlers = [];
+  private static eventHandlerRepository =
+    new EventHandlerRepository<EventHandler>((handler) => handler());
 
   public constructor(
     public readonly id: string,
@@ -20,41 +20,29 @@ export class FlashCard implements IFlashCard {
     return this._numberSuccessfulAnswers;
   }
 
-  failed(): void {
+  fail(): void {
     if (this._numberSuccessfulAnswers > 0) {
       this._numberSuccessfulAnswers--;
     }
-    this.publishOnFailed();
-    this.publishOnPractice();
+    FlashCard.eventHandlerRepository.publishOnFail();
+    FlashCard.eventHandlerRepository.publishOnPractice();
   }
 
   onFail(handler: EventHandler): void {
-    this.onFailHandlers.push(handler);
+    FlashCard.eventHandlerRepository.addFailHandler(handler);
   }
 
   onPractice(handler: EventHandler): void {
-    this.onPracticeHandlers.push(handler);
+    FlashCard.eventHandlerRepository.addPracticeHandler(handler);
   }
 
   onSuccess(handler: EventHandler): void {
-    this.onSuccessHandlers.push(handler);
+    FlashCard.eventHandlerRepository.addSuccessHandler(handler);
   }
 
   succeed(): void {
     this._numberSuccessfulAnswers++;
-    this.publishOnSucceed();
-    this.publishOnPractice();
-  }
-
-  private publishOnFailed() {
-    this.onFailHandlers.forEach((handler) => handler());
-  }
-
-  private publishOnPractice() {
-    this.onPracticeHandlers.forEach((handler) => handler());
-  }
-
-  private publishOnSucceed() {
-    this.onSuccessHandlers.forEach((handler) => handler());
+    FlashCard.eventHandlerRepository.publishOnSucceed();
+    FlashCard.eventHandlerRepository.publishOnPractice();
   }
 }

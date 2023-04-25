@@ -1,5 +1,5 @@
 export enum ExerciseState {
   Open,
-  Successful,
+  Succeeded,
   Failed,
 }
